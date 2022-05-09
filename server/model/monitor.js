@@ -7,7 +7,7 @@ dayjs.extend(timezone);
 const axios = require("axios");
 const { Prometheus } = require("../prometheus");
 const { log, UP, DOWN, PENDING, flipStatus, TimeLogger } = require("../../src/util");
-const { tcping, ping, dnsResolve, checkCertificate, checkStatusCode, getTotalClientInRoom, setting, errorLog, mqttAsync } = require("../util-server");
+const { tcping, ping, dnsResolve, checkCertificate, checkStatusCode, getTotalClientInRoom, setting, errorLog, mqttAsync, tlsAsync } = require("../util-server");
 const { R } = require("redbean-node");
 const { BeanModel } = require("redbean-node/dist/bean-model");
 const { Notification } = require("../notification");
@@ -431,6 +431,12 @@ class Monitor extends BeanModel {
                         port: this.port,
                         username: this.mqttUsername,
                         password: this.mqttPassword,
+                        interval: this.interval,
+                    });
+                    bean.status = UP;
+                } else if (this.type === "tls") {
+                    bean.msg = await tlsAsync(this.hostname, this.port, {
+                        keyword: this.keyword,
                         interval: this.interval,
                     });
                     bean.status = UP;

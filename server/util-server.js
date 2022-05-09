@@ -10,6 +10,7 @@ const chardet = require("chardet");
 const fs = require("fs");
 const nodeJsUtil = require("util");
 const mqtt = require("mqtt");
+const tls = require("tls");
 
 // From ping-lite
 exports.WIN = /^win/.test(process.platform);
@@ -169,6 +170,61 @@ exports.mqttAsync = function (hostname, topic, okMessage, options = {}) {
             }
         });
 
+    });
+};
+
+exports.tlsAsync = function (hostname, port, options = {}) {
+    return new Promise((resolve, reject) => {
+        const { keyword, interval = 60 } = options;
+
+        const timeoutID = setTimeout(() => {
+            log.debug("tls", "Timeout triggered");
+            client.end();
+            reject(new Error("Timeout"));
+        }, interval * 1000 * 0.8);
+
+        log.debug("tls", "Connecting to " + hostname + ":" + port);
+
+        let client = tls.connect(port, hostname, {});
+
+        client.on("secureConnect", () => {
+            const cipher = client.getCipher();
+            log.debug("tls", "Connected: authorized: " + client.authorized + ", cipher: " + (cipher ? cipher.name : '<none>'));
+        });
+
+        client.on("error", (error) => {
+            log.debug("tls", "Error: " + error);
+            client.destroy();
+            clearTimeout(timeoutID);
+            reject(error);
+        });
+
+        client.on("data", (data) => {
+            const dataString = data.toString().replace(/^\s+|\s+$/g, "");
+            log.debug("tls", "Data: '" + dataString + "', keyword: '" + (keyword || "") + "'");
+            client.end();
+            clearTimeout(timeoutID);
+            let success = false;
+            let message = undefined;
+            if (keyword) {
+                if (dataString.includes(keyword)) {
+                    success = true;
+                    message = "Data contains keyword";
+                } else {
+                    message = "Data does not contain keyword";
+                }
+            } else {
+                message = "Data received";
+                success = true;
+            }
+            if (success) {
+                log.debug("tls", "Success: " + message);
+                resolve(message);
+            } else {
+                log.debug("tls", "Failure: " + message);
+                reject(new Error(message));
+            }
+        });
     });
 };
 

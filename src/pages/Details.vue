@@ -9,7 +9,7 @@
                 <a v-if="monitor.type === 'http' || monitor.type === 'keyword' " :href="monitor.url" target="_blank">{{ monitor.url }}</a>
                 <span v-if="monitor.type === 'port'">TCP Ping {{ monitor.hostname }}:{{ monitor.port }}</span>
                 <span v-if="monitor.type === 'ping'">Ping: {{ monitor.hostname }}</span>
-                <span v-if="monitor.type === 'keyword'">
+                <span v-if="monitor.type === 'keyword' || monitor.type === 'tls'">
                     <br>
                     <span>{{ $t("Keyword") }}:</span> <span class="keyword">{{ monitor.keyword }}</span>
                 </span>
