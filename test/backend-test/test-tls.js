@@ -2,6 +2,35 @@ const test = require("test");
 const assert = require("node:assert");
 const { UP } = require("../../src/util");
 const { TlsMonitorType } = require("../../server/monitor-types/tls");
+const { tcping } = require("../../server/util-server");
+
+test("TCP.HTTP.good", async () => {
+    const pingTimeMs = await tcping("neverssl.com", 80);
+    assert.ok(pingTimeMs > 0);
+});
+
+test("TCP.HTTP.wrong_host", async () => {
+    assert.rejects(tcping("inexistent_host_45765136", 80));
+});
+
+test("TCP.HTTP.wrong_port", async () => {
+    assert.rejects(tcping("neverssl.com", 7));
+});
+
+test("TCP.SMTP.good", async () => {
+    const pingTimeMs = await tcping("smtp.mail.yahoo.com", 587);
+    assert.ok(pingTimeMs > 0);
+});
+
+test("TCP.POP3.good", async () => {
+    const pingTimeMs = await tcping("outlook.office365.com", 110);
+    assert.ok(pingTimeMs > 0);
+});
+
+test("TCP.POP3.good", async () => {
+    const pingTimeMs = await tcping("outlook.office365.com", 143);
+    assert.ok(pingTimeMs > 0);
+});
 
 test("TLS.HTTPS.good", async () => {
     const monitor = {
