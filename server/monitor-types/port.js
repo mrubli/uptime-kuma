@@ -1,5 +1,6 @@
 const { MonitorType } = require("./monitor-type");
 const { log, UP } = require("../../src/util");
+const dayjs = require("dayjs");
 const net = require("net");
 const tls = require("tls");
 const unescape = require("unescape-js");
@@ -114,7 +115,7 @@ class PortMonitorType extends MonitorType {
             log.info(this.name, "SUCCESS: " + message);
             heartbeat.msg = message;
             heartbeat.status = UP;
-            heartbeat.ping = this.connectDurationNs / 1e6;  // Convert nanoseconds to milliseconds
+            heartbeat.ping = Math.round(this.connectDurationMs);
         } else {
             log.info(this.name, "FAILURE: " + message);
             throw new Error(message);
@@ -168,11 +169,11 @@ class PortMonitorType extends MonitorType {
                 signal: aborter
             });
 
-            const startTime = process.hrtime.bigint();
+            const startTimeMs = dayjs().valueOf();
             const self = this;
 
             socket.connect(tlsOptions.port, tlsOptions.hostname,
-                function() { self.connectDurationNs = process.hrtime.bigint() - startTime; });
+                function() { self.connectDurationMs = dayjs().valueOf() - startTimeMs; });
             log.debug(this.name, "TCP connected");
 
             await this.startTls(aborter, socket, tlsOptions);
@@ -185,12 +186,12 @@ class PortMonitorType extends MonitorType {
             });
             return tlsSocket;
         } else {
-            const startTime = process.hrtime.bigint();
+            const startTimeMs = dayjs().valueOf();
             const self = this;
             const tlsSocket = tls.connect(tlsOptions.port, tlsOptions.hostname, {
                 signal: aborter,
                 servername: tlsOptions.hostname
-            }, function() { self.connectDurationNs = process.hrtime.bigint() - startTime; });
+            }, function() { self.connectDurationMs = dayjs().valueOf() - startTimeMs; });
             log.debug(this.name, "TLS connected");
             return tlsSocket;
         }
