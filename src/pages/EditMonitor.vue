@@ -19,10 +19,7 @@
                                             HTTP(s)
                                         </option>
                                         <option value="port">
-                                            TCP Port
-                                        </option>
-                                        <option value="port-tls">
-                                            TCP Port (TLS)
+                                            TCP/TLS Port
                                         </option>
                                         <option value="ping">
                                             Ping
@@ -128,16 +125,16 @@
                             </div>
 
                             <!-- Keyword -->
-                            <div v-if="monitor.type === 'keyword' || monitor.type === 'grpc-keyword' || monitor.type === 'port-tls'" class="my-3">
+                            <div v-if="monitor.type === 'keyword' || monitor.type === 'grpc-keyword' || monitor.type === 'port'" class="my-3">
                                 <label for="keyword" class="form-label">{{ $t("Keyword") }}</label>
-                                <input id="keyword" v-model="monitor.keyword" type="text" class="form-control" :required="monitor.type !== 'port-tls'">
+                                <input id="keyword" v-model="monitor.keyword" type="text" class="form-control" :required="monitor.type !== 'port'">
                                 <div class="form-text">
                                     {{ $t("keywordDescription") }}
                                 </div>
                             </div>
 
                             <!-- Invert keyword -->
-                            <div v-if="monitor.type === 'keyword' || monitor.type === 'grpc-keyword' || monitor.type === 'port-tls'" class="my-3 form-check">
+                            <div v-if="monitor.type === 'keyword' || monitor.type === 'grpc-keyword' || monitor.type === 'port'" class="my-3 form-check">
                                 <input id="invert-keyword" v-model="monitor.invertKeyword" class="form-check-input" type="checkbox">
                                 <label class="form-check-label" for="invert-keyword">
                                     {{ $t("Invert Keyword") }}
@@ -148,7 +145,7 @@
                             </div>
 
                             <!-- Request -->
-                            <div v-if="monitor.type === 'port-tls'" class="my-3">
+                            <div v-if="monitor.type === 'port'" class="my-3">
                                 <div class="my-3">
                                     <label for="tcp-request" class="form-label">{{ $t("Request") }}</label>
                                     <input id="tcp-request" v-model="monitor.tcpRequest" class="form-control" />
@@ -261,14 +258,14 @@
 
                             <!-- Hostname -->
                             <!-- TCP Port / Ping / DNS / Steam / MQTT / Radius / Tailscale Ping / TLS only -->
-                            <div v-if="monitor.type === 'port' || monitor.type === 'ping' || monitor.type === 'dns' || monitor.type === 'steam' || monitor.type === 'gamedig' ||monitor.type === 'mqtt' || monitor.type === 'radius' || monitor.type === 'tailscale-ping' || monitor.type === 'port-tls'" class="my-3">
+                            <div v-if="monitor.type === 'port' || monitor.type === 'ping' || monitor.type === 'dns' || monitor.type === 'steam' || monitor.type === 'gamedig' ||monitor.type === 'mqtt' || monitor.type === 'radius' || monitor.type === 'tailscale-ping'" class="my-3">
                                 <label for="hostname" class="form-label">{{ $t("Hostname") }}</label>
                                 <input id="hostname" v-model="monitor.hostname" type="text" class="form-control" :pattern="`${monitor.type === 'mqtt' ? mqttIpOrHostnameRegexPattern : ipOrHostnameRegexPattern}`" required>
                             </div>
 
                             <!-- Port -->
                             <!-- For TCP Port / Steam / MQTT / Radius / TLS Type -->
-                            <div v-if="monitor.type === 'port' || monitor.type === 'steam' || monitor.type === 'gamedig' || monitor.type === 'mqtt' || monitor.type === 'radius' || monitor.type === 'port-tls'" class="my-3">
+                            <div v-if="monitor.type === 'port' || monitor.type === 'steam' || monitor.type === 'gamedig' || monitor.type === 'mqtt' || monitor.type === 'radius'" class="my-3">
                                 <label for="port" class="form-label">{{ $t("Port") }}</label>
                                 <input id="port" v-model="monitor.port" type="number" class="form-control" required min="0" max="65535" step="1">
                             </div>
@@ -915,7 +912,7 @@
                             </template>
 
                             <!-- TLS Options -->
-                            <template v-if="monitor.type === 'port-tls'">
+                            <template v-if="monitor.type === 'port'">
                                 <h2 class="mt-5 mb-2">{{ $t("TLS Options") }}</h2>
 
                                 <!-- Enable TLS -->

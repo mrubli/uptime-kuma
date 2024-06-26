@@ -24,8 +24,8 @@ function ellipsize(s) {
     return quote(s.length <= maxLen ? s : `${s.substring(0, maxLen)}…`);
 }
 
-class TlsMonitorType extends MonitorType {
-    name = "port-tls";
+class PortMonitorType extends MonitorType {
+    name = "port";
 
     /**
      * @inheritdoc
@@ -292,5 +292,5 @@ class TlsMonitorType extends MonitorType {
 }
 
 module.exports = {
-    TlsMonitorType,
+    PortMonitorType,
 };

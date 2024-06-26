@@ -4,7 +4,7 @@ const { Prometheus } = require("../prometheus");
 const { log, UP, DOWN, PENDING, MAINTENANCE, flipStatus, MAX_INTERVAL_SECOND, MIN_INTERVAL_SECOND,
     SQL_DATETIME_FORMAT
 } = require("../../src/util");
-const { tcping, ping, checkCertificate, checkStatusCode, getTotalClientInRoom, setting, mssqlQuery, postgresQuery, mysqlQuery, setSetting, httpNtlm, radius, grpcQuery,
+const { ping, checkCertificate, checkStatusCode, getTotalClientInRoom, setting, mssqlQuery, postgresQuery, mysqlQuery, setSetting, httpNtlm, radius, grpcQuery,
     redisPingAsync, kafkaProducerAsync, getOidcTokenClientCredentials, rootCertificatesFingerprints, axiosAbortSignal
 } = require("../util-server");
 const { R } = require("redbean-node");
@@ -640,11 +640,6 @@ class Monitor extends BeanModel {
                             throw new Error(bean.msg + ", but value is not equal to expected value, value was: [" + result + "]");
                         }
                     }
-
-                } else if (this.type === "port") {
-                    bean.ping = await tcping(this.hostname, this.port);
-                    bean.msg = "";
-                    bean.status = UP;
 
                 } else if (this.type === "ping") {
                     bean.ping = await ping(this.hostname, this.packetSize);

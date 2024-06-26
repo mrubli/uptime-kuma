@@ -1,7 +1,7 @@
 const test = require("test");
 const assert = require("node:assert");
 const { UP } = require("../../src/util");
-const { TlsMonitorType } = require("../../server/monitor-types/tls");
+const { PortMonitorType } = require("../../server/monitor-types/port");
 const { tcping } = require("../../server/util-server");
 
 test("TCP.HTTP.good", async () => {
@@ -45,7 +45,7 @@ test("TLS.HTTPS.good", async () => {
         status: null,
         msg: null,
     };
-    await new TlsMonitorType().check(monitor, heartbeat, null);
+    await new PortMonitorType().check(monitor, heartbeat, null);
     assert.equal(heartbeat.status, UP);
     assert.ok(heartbeat.msg.startsWith(`Keyword "${monitor.keyword}" contained in response`));
 });
@@ -63,7 +63,7 @@ test("TLS.HTTPS.expired", () => {
         status: null,
         msg: null,
     };
-    assert.rejects((new TlsMonitorType().check(monitor, heartbeat, null)),
+    assert.rejects((new PortMonitorType().check(monitor, heartbeat, null)),
         (e) => e.message.includes("certificate has expired"));
 });
 
@@ -80,7 +80,7 @@ test("TLS.HTTPS.wrong_host", () => {
         status: null,
         msg: null,
     };
-    assert.rejects((new TlsMonitorType().check(monitor, heartbeat, null)),
+    assert.rejects((new PortMonitorType().check(monitor, heartbeat, null)),
         (e) => e.message.includes("Hostname/IP does not match certificate's altnames"));
 });
 
@@ -100,7 +100,7 @@ test("TLS.SMTP.STARTTLS.good", async () => {
         status: null,
         msg: null,
     };
-    await new TlsMonitorType().check(monitor, heartbeat, null);
+    await new PortMonitorType().check(monitor, heartbeat, null);
     assert.equal(heartbeat.status, UP);
     assert.ok(heartbeat.msg.startsWith(`Keyword "${monitor.keyword}" contained in response`));
 });
@@ -121,7 +121,7 @@ test("TLS.SMTP.STARTTLS.invalid_prompt", async () => {
         status: null,
         msg: null,
     };
-    assert.rejects((new TlsMonitorType().check(monitor, heartbeat, null)),
+    assert.rejects((new PortMonitorType().check(monitor, heartbeat, null)),
         (e) => e.message.includes("Unexpected STARTTLS prompt"));
 });
 
@@ -141,7 +141,7 @@ test("TLS.SMTP.STARTTLS.invalid_command", async () => {
         status: null,
         msg: null,
     };
-    assert.rejects((new TlsMonitorType().check(monitor, heartbeat, null)),
+    assert.rejects((new PortMonitorType().check(monitor, heartbeat, null)),
         (e) => e.message.includes("500 "));
 });
 
@@ -161,7 +161,7 @@ test("TLS.SMTP.STARTTLS.invalid_request", async () => {
         status: null,
         msg: null,
     };
-    assert.rejects((new TlsMonitorType().check(monitor, heartbeat, null)),
+    assert.rejects((new PortMonitorType().check(monitor, heartbeat, null)),
         (e) => e.message.includes("500 "));
 });
 
@@ -181,7 +181,7 @@ test("TLS.SMTP.STARTTLS.incomplete_request", async () => {
         status: null,
         msg: null,
     };
-    assert.rejects((new TlsMonitorType().check(monitor, heartbeat, null)),
+    assert.rejects((new PortMonitorType().check(monitor, heartbeat, null)),
         (e) => e.message.includes("Timeout while reading request response"));
 });
 
@@ -201,7 +201,7 @@ test("TLS.POP3.STARTTLS.good", async () => {
         status: null,
         msg: null,
     };
-    await new TlsMonitorType().check(monitor, heartbeat, null);
+    await new PortMonitorType().check(monitor, heartbeat, null);
     assert.equal(heartbeat.status, UP);
     assert.ok(heartbeat.msg.startsWith(`Keyword "${monitor.keyword}" contained in response`));
 });
@@ -222,7 +222,7 @@ test("TLS.IMAP4.STARTTLS.good", async () => {
         status: null,
         msg: null,
     };
-    await new TlsMonitorType().check(monitor, heartbeat, null);
+    await new PortMonitorType().check(monitor, heartbeat, null);
     assert.equal(heartbeat.status, UP);
     assert.ok(heartbeat.msg.startsWith(`Keyword "${monitor.keyword}" contained in response`));
 });
