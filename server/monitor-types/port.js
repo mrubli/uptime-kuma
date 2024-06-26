@@ -114,6 +114,7 @@ class PortMonitorType extends MonitorType {
             log.info(this.name, "SUCCESS: " + message);
             heartbeat.msg = message;
             heartbeat.status = UP;
+            heartbeat.ping = this.connectDurationNs / 1e6;  // Convert nanoseconds to milliseconds
         } else {
             log.info(this.name, "FAILURE: " + message);
             throw new Error(message);
@@ -166,7 +167,12 @@ class PortMonitorType extends MonitorType {
             const socket = new net.Socket({
                 signal: aborter
             });
-            socket.connect(tlsOptions.port, tlsOptions.hostname);
+
+            const startTime = process.hrtime.bigint();
+            const self = this;
+
+            socket.connect(tlsOptions.port, tlsOptions.hostname,
+                function() { self.connectDurationNs = process.hrtime.bigint() - startTime; });
             log.debug(this.name, "TCP connected");
 
             await this.startTls(aborter, socket, tlsOptions);
@@ -179,10 +185,12 @@ class PortMonitorType extends MonitorType {
             });
             return tlsSocket;
         } else {
+            const startTime = process.hrtime.bigint();
+            const self = this;
             const tlsSocket = tls.connect(tlsOptions.port, tlsOptions.hostname, {
                 signal: aborter,
                 servername: tlsOptions.hostname
-            });
+            }, function() { self.connectDurationNs = process.hrtime.bigint() - startTime; });
             log.debug(this.name, "TLS connected");
             return tlsSocket;
         }
